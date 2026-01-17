@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Raani | For Sanika</title>
+    <!-- GSAP for 2026-level animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #ff4d6d;
+            --secondary: #ff758f;
+            --bg: #0a0a0c;
+            --glass: rgba(255, 255, 255, 0.1);
+            --gold: #ffd700;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Floating Background Decorations */
+        #bg-elements {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(circle at center, #1a0a1a 0%, #0a0a0c 100%);
+        }
+
+        .heart { position: absolute; color: var(--primary); opacity: 0.3; filter: blur(1px); }
+
+        /* Page Management */
+        .page {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1;
+            transition: opacity 0.8s ease;
+        }
+
+        .page.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* UI Components */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 { font-family: 'Dancing Script', cursive; font-size: 3.5rem; color: var(--primary); margin-bottom: 1rem; }
+        p { font-size: 1.1rem; line-height: 1.6; margin-bottom: 1.5rem; font-weight: 300; }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--primary); }
+
+        /* Game Elements */
+        #heart-catcher { height: 200px; width: 100%; position: relative; border: 1px dashed var(--glass); margin-bottom: 20px; cursor: crosshair; }
+        .game-target { position: absolute; font-size: 2rem; cursor: pointer; user-select: none; }
+
+        /* Cake Styling */
+        .cake {
+            position: relative;
+            width: 150px; height: 120px;
+            background: #f4d03f;
+            border-radius: 10px 10px 0 0;
+            margin: 50px auto;
+        }
+        .cake::before {
+            content: ''; position: absolute; top: -20px; left: 5px;
+            width: 140px; height: 40px; background: #e67e22;
+            border-radius: 50%; box-shadow: 0 5px #d35400;
+        }
+        .candle {
+            position: absolute; top: -45px; left: 50%; transform: translateX(-50%);
+            width: 10px; height: 30px; background: white;
+        }
+        .flame {
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+            width: 15px; height: 20px; background: orange;
+            border-radius: 50% 50% 20% 20%;
+            animation: flicker 0.1s infinite alternate;
+        }
+
+        @keyframes flicker { 
+            from { transform: translateX(-50%) scale(1); opacity: 0.8; }
+            to { transform: translateX(-50%) scale(1.1); opacity: 1; }
+        }
+
+        /* Image Upload Grid */
+        .upload-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .preview-box {
+            width: 100px; height: 100px;
+            border: 2px dashed var(--glass);
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Video Simulation */
+        #video-container {
+            width: 320px; height: 480px;
+            background: black;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 30px var(--primary);
+        }
+        #video-canvas { width: 100%; height: 100%; }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="bg-elements"></div>
+
+    <!-- Page 1: The Intro -->
+    <div id="page1" class="page active">
+        <div class="glass-card">
+            <h1>Hi Sanika...</h1>
+            <p>I built a small digital universe just for you. Every second spent with you feels like a celebration. Tomorrow, you turn 27, and my heart is already racing.</p>
+            <p>Are you ready for your journey, Raani?</p>
+            <button class="btn" onclick="nextPage(2)">Unlock My Heart</button>
+        </div>
+    </div>
+
+    <!-- Page 2: The Heart Catcher -->
+    <div id="page2" class="page">
+        <div class="glass-card">
+            <h1>Catch the Love</h1>
+            <p>Sanika, you caught my attention the first day, and my heart every day since. Catch 5 hearts to reveal my message.</p>
+            <div id="heart-catcher"></div>
+            <div id="catch-msg" class="hidden">
+                <p>"Like these hearts, I'll always be reaching for you. Happy 27th Birthday, my beautiful Sanika!"</p>
+                <button class="btn" onclick="nextPage(3)">Continue Journey</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 3: The Secret Thought -->
+    <div id="page3" class="page">
+        <div class="glass-card">
+            <h1>A Thought for You</h1>
+            <p>I was thinking... 27 years ago, the world became a billion times more beautiful because you were born.</p>
+            <div style="margin: 20px; font-style: italic; color: var(--gold);">
+                "In your eyes, I found my home. In your smile, I found my peace."
+            </div>
+            <button class="btn" onclick="nextPage(4)">The Surprise</button>
+        </div>
+    </div>
+
+    <!-- Page 4: The Cake Moment -->
+    <div id="page4" class="page">
+        <div class="glass-card">
+            <h1>Make a Wish, Raani</h1>
+            <div class="cake" id="bday-cake">
+                <div class="candle"><div class="flame" id="candle-flame"></div></div>
+            </div>
+            <p id="cake-instruction">Click the flame to blow out the candle!</p>
+            <div id="wish-reveal" class="hidden">
+                <p>Happy 27th Birthday, Sanika! May every wish of yours come true. You are my greatest blessing.</p>
+                <button class="btn" onclick="nextPage(5)">Our Memories</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 5: Upload -->
+    <div id="page5" class="page">
+        <div class="glass-card">
+            <h1>Your Special Gallery</h1>
+            <p>Upload 4 of your favorite photos of us or yourself to generate your birthday film.</p>
+            <div class="upload-grid">
+                <div class="preview-box" id="p1"></div>
+                <div class="preview-box" id="p2"></div>
+                <div class="preview-box" id="p3"></div>
+                <div class="preview-box" id="p4"></div>
+            </div>
+            <input type="file" id="photo-input" multiple accept="image/*" class="hidden">
+            <button class="btn" onclick="document.getElementById('photo-input').click()">Select Photos</button>
+            <button class="btn hidden" id="gen-vid-btn" onclick="generateVideo()">Create My Movie</button>
+        </div>
+    </div>
+
+    <!-- Page 6: The Finale -->
+    <div id="page6" class="page">
+        <div id="video-container">
+            <canvas id="video-canvas"></canvas>
+        </div>
+        <div class="glass-card" style="margin-top: 20px;">
+            <h1>Happy Birthday Raani!</h1>
+            <p>Forever yours, Your <strong>Laddoo</strong></p>
+            <button class="btn" onclick="shareExperience()">Share the Love</button>
+            <button class="btn" style="background:none; border:1px solid white;" onclick="location.reload()">Replay</button>
+        </div>
+    </div>
+
+    <script>
+        // Background Decoration
+        const bg = document.getElementById('bg-elements');
+        for (let i = 0; i < 30; i++) {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.top = Math.random() * 100 + 'vh';
+            heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            bg.appendChild(heart);
+            
+            gsap.to(heart, {
+                y: -100,
+                opacity: 0.1,
+                duration: 5 + Math.random() * 5,
+                repeat: -1,
+                ease: "power1.inOut"
+            });
+        }
+
+        // Page Navigation
+        function nextPage(num) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const next = document.getElementById('page' + num);
+            next.classList.add('active');
+            
+            if(num === 2) startHeartGame();
+            if(num === 4) {
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#ff4d6d', '#ffd700'] });
+            }
+        }
+
+        // Page 2 Game
+        let caughtCount = 0;
+        function startHeartGame() {
+            const container = document.getElementById('heart-catcher');
+            if (container.children.length > 0) return;
+
+            for(let i=0; i<5; i++) {
+                const h = document.createElement('div');
+                h.className = 'game-target';
+                h.innerHTML = '💖';
+                h.style.left = Math.random() * 80 + '%';
+                h.style.top = Math.random() * 80 + '%';
+                h.onclick = () => {
+                    h.style.display = 'none';
+                    caughtCount++;
+                    if(caughtCount === 5) {
+                        document.getElementById('catch-msg').classList.remove('hidden');
+                    }
+                };
+                container.appendChild(h);
+                gsap.to(h, { x: "random(-20, 20)", y: "random(-20, 20)", repeat: -1, yoyo: true, duration: 1 });
+            }
+        }
+
+        // Page 4 Cake
+        document.getElementById('candle-flame').onclick = function() {
+            this.style.display = 'none';
+            document.getElementById('cake-instruction').innerText = "The wish is sent to the stars!";
+            document.getElementById('wish-reveal').classList.remove('hidden');
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.7 } });
+        };
+
+        // Page 5 Upload Logic
+        let uploadedImages = [];
+        document.getElementById('photo-input').onchange = function(e) {
+            const files = e.target.files;
+            uploadedImages = [];
+            for(let i=0; i<Math.min(files.length, 4); i++) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = document.createElement('img');
+                    img.src = event.target.result;
+                    document.getElementById('p' + (i+1)).innerHTML = '';
+                    document.getElementById('p' + (i+1)).appendChild(img);
+                    uploadedImages.push(img);
+                    if(uploadedImages.length >= 1) {
+                        document.getElementById('gen-vid-btn').classList.remove('hidden');
+                    }
+                };
+                reader.readAsDataURL(files[i]);
+            }
+        };
+
+        // Page 6 Video Engine (Canvas Slideshow)
+        function generateVideo() {
+            nextPage(6);
+            const canvas = document.getElementById('video-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 320;
+            canvas.height = 480;
+
+            let frame = 0;
+            let currentImgIdx = 0;
+
+            function draw() {
+                ctx.fillStyle = 'black';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                if (uploadedImages.length > 0) {
+                    const img = uploadedImages[currentImgIdx];
+                    // Ken Burns Effect
+                    const scale = 1 + (frame % 200) / 1000;
+                    const w = canvas.width * scale;
+                    const h = (img.height / img.width) * w;
+                    ctx.drawImage(img, (canvas.width - w)/2, (canvas.height - h)/2, w, h);
+                }
+
+                // Overlay Text
+                ctx.fillStyle = 'rgba(0,0,0,0.4)';
+                ctx.fillRect(0, 350, canvas.width, 130);
+                
+                ctx.font = '24px Dancing Script';
+                ctx.fillStyle = '#ff4d6d';
+                ctx.textAlign = 'center';
+                ctx.fillText("Happy Birthday Raani", canvas.width/2, 400);
+                
+                ctx.font = '14px Inter';
+                ctx.fillStyle = 'white';
+                ctx.fillText("27 Years of Perfection", canvas.width/2, 430);
+                ctx.fillText("With Love, Laddoo", canvas.width/2, 450);
+
+                frame++;
+                if(frame % 200 === 0) currentImgIdx = (currentImgIdx + 1) % uploadedImages.length;
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+
+        async function shareExperience() {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Happy Birthday Sanika',
+                        text: 'I just celebrated Sanika\'s birthday with this special experience!',
+                        url: window.location.href
+                    });
+                } catch (err) {
+                    console.log("Share failed");
+                }
+            } else {
+                alert("Link Copied! Send it to your Raani.");
+            }
+        }
+    </script>
+</body>
+</html>
